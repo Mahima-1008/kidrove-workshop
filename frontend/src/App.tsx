@@ -1,22 +1,25 @@
 import { Navbar } from "./components/Navbar";
+import { Hero } from "./components/Hero";
+import { WorkshopDetails } from "./components/WorkshopDetails";
+import { LearningOutcomes } from "./components/LearningOutcomes";
+import { FAQ } from "./components/FAQ";
+import { RegistrationForm } from "./components/RegistrationForm";
+import { Footer } from "./components/Footer";
 
 function App() {
   return (
     <>
       <Navbar />
 
-      <main className="pt-20">
-        <section className="kid-container py-20 text-center">
-          <h1 className="text-5xl font-bold">
-            AI & Robotics Summer Workshop
-          </h1>
-
-          <p className="mt-6 text-lg text-gray-600">
-            Learn AI, Robotics, Coding and Future Technologies in a fun,
-            interactive 4-week online workshop.
-          </p>
-        </section>
+      <main>
+        <Hero />
+        <WorkshopDetails />
+        <LearningOutcomes />
+        <FAQ />
+        <RegistrationForm />
       </main>
+
+      <Footer />
     </>
   );
 }
