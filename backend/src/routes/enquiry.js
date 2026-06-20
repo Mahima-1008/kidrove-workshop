@@ -3,20 +3,41 @@ const Enquiry = require('../models/Enquiry');
 
 const router = express.Router();
 
-const REQUIRED_FIELDS = ['firstName', 'lastName', 'email', 'phone'];
+const REQUIRED_FIELDS = ['studentName', 'parentName', 'email', 'phone', 'age'];
+
+function normalizeEnquiry(body) {
+  return {
+    studentName: body.studentName ?? body.firstName,
+    parentName: body.parentName ?? body.lastName,
+    email: body.email,
+    phone: body.phone,
+    age: body.age,
+    message: body.message,
+  };
+}
 
 function validateEnquiry(body) {
   const errors = [];
 
+  const enquiry = normalizeEnquiry(body);
+
   for (const field of REQUIRED_FIELDS) {
-    const value = body[field];
+    const value = enquiry[field];
     if (value === undefined || value === null || String(value).trim() === '') {
       errors.push(`${field} is required`);
     }
   }
 
-  if (body.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+  if (enquiry.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(enquiry.email)) {
     errors.push('email must be valid');
+  }
+
+  if (enquiry.age) {
+    const age = Number(enquiry.age);
+
+    if (!Number.isInteger(age) || age < 1 || age > 18) {
+      errors.push('age must be a whole number between 1 and 18');
+    }
   }
 
   return errors;
@@ -34,12 +55,15 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    const enquiryBody = normalizeEnquiry(req.body);
+
     const enquiry = await Enquiry.create({
-      firstName: req.body.firstName.trim(),
-      lastName: req.body.lastName.trim(),
-      email: req.body.email.trim().toLowerCase(),
-      phone: req.body.phone.trim(),
-      message: req.body.message?.trim(),
+      studentName: enquiryBody.studentName.trim(),
+      parentName: enquiryBody.parentName.trim(),
+      email: enquiryBody.email.trim().toLowerCase(),
+      phone: enquiryBody.phone.trim(),
+      age: Number(enquiryBody.age),
+      message: enquiryBody.message?.trim(),
     });
 
     return res.status(201).json({
